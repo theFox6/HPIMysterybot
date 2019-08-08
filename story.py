@@ -1,5 +1,5 @@
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Filters
-from telegram import ReplyKeyboardMarkup
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 import users
 
 GETNAME, START, QUEST1, QUEST1, QUEST2, QUEST3, QUEST4, UNFINISHED = range(8)
@@ -31,7 +31,8 @@ def quest1(bot, update):
 def answer1(bot, update):
     answer = update.message.text
     if answer == '1':
-        update.message.reply_text("Das war die richtige Tür.")
+        reply_markup = ReplyKeyboardRemove()
+        bot.send_message(chat_id=update.message.chat_id, text="Das war die richtige Tür.", reply_markup=reply_markup)
         update.message.reply_text("Danke. Ich weiß nicht, ob ich ohne dich noch leben würde.")
         return quest2(bot, update)
     else:
@@ -53,6 +54,7 @@ def answer2(bot, update):
         return quest3(bot, update)
     else:
         update.message.reply_text("Oh nein, du hast mich getötet!")
+        update.message.reply_text("versuchs doch nochmal")
     
 def quest3(bot, update):
     update.message.reply_text("Jo, ich hab noch eins!")
@@ -71,6 +73,7 @@ def answer3(bot, update):
         return quest4(bot, update)
     else:
         update.message.reply_text("Oh nein, du hast mich getötet!")
+        update.message.reply_text("versuchs doch nochmal")
     
 
 def quest4(bot,update):
@@ -90,6 +93,7 @@ def answer4(bot, update):
         return UNFINISHED
     else:
         update.message.reply_text("Oh nein, " + users.all[update.message.chat_id].name + " du hast mich getötet!")
+        update.message.reply_text("versuchs doch nochmal")
     
 
 def echo(bot, update):
