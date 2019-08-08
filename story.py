@@ -33,7 +33,7 @@ def answer1(bot, update):
     if answer == '1':
         update.message.reply_text("Das war die richtige Tür.")
         update.message.reply_text("Danke, ich weiss nicht ob ich ohne dich noch leben würde.")
-        return UNFINISHED
+        return quest2(bot, update)
     else:
         reply_markup = ReplyKeyboardMarkup([['neu anfangen']], one_time_keyboard=True)
         bot.send_message(chat_id=update.message.chat_id, 
@@ -43,56 +43,53 @@ def answer1(bot, update):
 
 def quest2(bot, update):
     update.message.reply_text("Ich muss ein weiteres Rätsel beantworten. Bitte hilft mir ich weiß es nicht.")
-    update.message.reply_text("Was kannst du sehen, aber nicht nehmen? Ein Tipp wurde beigelegt: Du bist der Grund!")
+    update.message.reply_text("Was kannst du sehen, aber nicht nehmen?\nEin Tipp wurde beigelegt: Du bist der Grund!")
     return QUEST2
 
 def answer2(bot, update):
     answer = update.message.text
-    if answer == "schatten" or "Schatten":
+    if answer == "schatten" or answer == "Schatten":
         update.message.reply_text("Richtig, danke für die Hilfe ma boy!")
-        return
+        return quest3(bot, update)
     else:
-        update.message.text("Oh nein, du hast mich getöt!")
-        return
+        update.message.reply_text("Oh nein, du hast mich getötet!")
     
 def quest3(bot, update):
-    update.message.text("Jo, ich hab noch eins!")
-    update.message.text("Dort hängt es an der Wand, das gibt mir jeden moregen die Hand.")
-    sleep(10000)
+    update.message.reply_text("Jo, ich hab noch eins!")
+    update.message.reply_text("Dort hängt es an der Wand, das gibt mir jeden morgen die Hand.")
+    '''sleep(10000)
     update.message.text("Brauchst du einen Tipp?")
     answer = update.message.text
-    if answer == "Ja" or "ja":
-        update.message.text("Der Gegenstand befindet sich im Badezimmer.")
+    if answer == "ja":
+        update.message.text("Der Gegenstand befindet sich im Badezimmer.")'''
     return QUEST3
 
 def answer3(bot, update):
-     answer = update.message.text
-    if answer == "Handtuch" or "handtuch":
+    answer = update.message.text
+    if answer == "Handtuch" or answer == "handtuch":
         update.message.reply_text("Sehr gut, du bist ein schlaues Ding.")
-        return
+        return quest4(bot, update)
     else:
-        update.message.text("Oh nein, du hast mich getöt!")
-        return
+        update.message.reply_text("Oh nein, du hast mich getöt!")
     
 
 def quest4(bot,update):
-    update.message.text("Ich bin immernoch gefangen und ich stehe vor einem weiteren Rätsel wofür ich deine Hilfe benötige. Es ist echt schwer.")
-    update.message.text("wer es macht, der sagt es nicht, \bwer es nimmt, der kennt es nicht, \bwer es kennt, der nimmt es nicht.")
-    sleep(10000)
+    update.message.reply_text("Ich bin immernoch gefangen und ich stehe vor einem weiteren Rätsel wofür ich deine Hilfe benötige. Es ist echt schwer.")
+    update.message.reply_text("wer es macht, der sagt es nicht,\nwer es nimmt, der kennt es nicht,\nwer es kennt, der nimmt es nicht.")
+    '''sleep(10000)
     update.message.text("Brauchst du einen Tipp?")
     answer = update.message.text
-    if answer == "Ja" or "ja":
-        update.message.text("Es hat etwas mit geld zu tun")
+    if answer == "ja":
+        update.message.text("Es hat etwas mit geld zu tun")'''
     return QUEST4
     
 def answer4(bot, update):
-     answer = update.message.text
-    if answer == "Falschgeld" or "falschgeld" or "Blüten" or "blüten" or "Blüte" or "blüte" or "Spielgeld" or "spielgeld":
+    answer = update.message.text
+    if answer == "Falschgeld" or answer == "falschgeld" or answer == "Blüten" or answer == "blüten" or answer == "Blüte" or answer == "blüte" or answer == "Spielgeld" or answer == "spielgeld":
         update.message.reply_text("Bravo, das rätsel war etwas knifflig")
-        return
+        return UNFINISHED
     else:
-        update.message.text("Oh nein, du hast mich getöt!")
-        return
+        update.message.reply_text("Oh nein, du hast mich getöt!")
     
 
 def echo(bot, update):
@@ -106,7 +103,7 @@ conv_handler = ConversationHandler(
         QUEST1: [MessageHandler(Filters.text, answer1)],
         QUEST2: [MessageHandler(Filters.text, answer2)],
         QUEST3: [MessageHandler(Filters.text, answer3)],
-        QUEST4: [MessageHandler(Filters.text, answer4)]
+        QUEST4: [MessageHandler(Filters.text, answer4)],
         UNFINISHED: [MessageHandler(Filters.text, echo)]
     },
     fallbacks = [CommandHandler('reset', intro)]
