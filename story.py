@@ -6,7 +6,7 @@ GETNAME, START, QUEST1, QUEST1, QUEST2, QUEST3, QUEST4, UNFINISHED = range(8)
 
 def intro(bot, update):
     update.message.reply_text("Hallo, ich brauche deine Hilfe! Ich wurde gefangen genommen und muss entkommen!") 
-    update.message.reply_text("Ich bin Caliope.")
+    update.message.reply_text("Ich bin Calliope.")
     update.message.reply_text("Wie lautet dein Name?")
     return GETNAME
 
@@ -32,7 +32,7 @@ def answer1(bot, update):
     answer = update.message.text
     if answer == '1':
         update.message.reply_text("Das war die richtige Tür.")
-        update.message.reply_text("Danke, ich weiss nicht ob ich ohne dich noch leben würde.")
+        update.message.reply_text("Danke. Ich weiß nicht, ob ich ohne dich noch leben würde.")
         return quest2(bot, update)
     else:
         reply_markup = ReplyKeyboardMarkup([['neu anfangen']], one_time_keyboard=True)
@@ -42,7 +42,7 @@ def answer1(bot, update):
         return START
 
 def quest2(bot, update):
-    update.message.reply_text("Ich muss ein weiteres Rätsel beantworten. Bitte hilft mir ich weiß es nicht.")
+    update.message.reply_text("Ich muss ein weiteres Rätsel beantworten. Bitte hilf mir, ich weiß es nicht.")
     update.message.reply_text("Was kannst du sehen, aber nicht nehmen?\nEin Tipp wurde beigelegt: Du bist der Grund!")
     return QUEST2
 
@@ -70,7 +70,7 @@ def answer3(bot, update):
         update.message.reply_text("Sehr gut, du bist ein schlaues Ding.")
         return quest4(bot, update)
     else:
-        update.message.reply_text("Oh nein, du hast mich getöt!")
+        update.message.reply_text("Oh nein, du hast mich getötet!")
     
 
 def quest4(bot,update):
@@ -89,7 +89,7 @@ def answer4(bot, update):
         update.message.reply_text("Bravo, das rätsel war etwas knifflig")
         return UNFINISHED
     else:
-        update.message.reply_text("Oh nein, du hast mich getöt!")
+        update.message.reply_text("Oh nein, " + users.all[update.message.chat_id].name + " du hast mich getötet!")
     
 
 def echo(bot, update):
