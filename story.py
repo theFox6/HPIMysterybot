@@ -3,7 +3,7 @@ from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, KeyboardButton, L
 from threading import Timer
 import users, hints, math
 
-GETNAME, START, QUEST1, QUEST4, QUEST5, QUEST6, QUEST7, QUEST8, UNFINISHED = range(9)
+GETNAME, START, QUEST1, QUEST2, QUEST3, QUEST4, QUEST5, QUEST6, QUEST7, QUEST8, UNFINISHED = range(11)
 
 def intro(bot, update):
     update.message.reply_text("Hallo, ich brauche deine Hilfe! Ich wurde gefangen genommen und du must mich befreien!") 
@@ -23,7 +23,7 @@ def quest1(bot, update):
     location_keyboard = KeyboardButton(text="Ich bin angekommen.", request_location=True)
     reply_markup = ReplyKeyboardMarkup([[location_keyboard]])
     bot.send_message(chat_id=update.message.chat_id, 
-                 text="Baum", 
+                 text="Finde den ästhetischsten Baum auf dem Gelände", 
                   reply_markup=reply_markup)
     return QUEST1
 
@@ -46,21 +46,45 @@ def answer1(bot, update):
     else:
         update.message.reply_text("Du musst noch "+ str(round(diff)) + " Meter gehen.")
 
+def quest2(bot, update):
+    chat_id = update.message.chat_id
+    bot.send_photo(chat_id=chat_id, photo=open('Kunstwerk.jpg', 'rb'))
+    update.message.reply_text("Bitte identifiziere dieses Kunstwerk für mich, indem du mir den Namen nennst.")
+    return QUEST2
+
+def answer2(bot, update):
+    answer = update.message.text
+    if answer == "Kapuzinerkresse blau":
+        update.message.reply_text("Perfekt, das hast du gut gemacht!")
+
+def quest3(bot, update):
+    chat_id = update.message.chat_id
+    update.message.reply_text("Finde bitte für mich den Ort, wo das Schaf seine Batterien aufläd.")
+    reply_markup = ReplyKeyboardMarkup([['1','2','3'],['4','5','6'],['7','8','9'],['0']], one_time_keyboard=True)
+    bot.send_message(chat_id=chat_id, text="Ich benötige die Inventarnummer die darauf steht, als code um eine Tür zu öffnen", reply_markup=reply_markup)
+    return QUEST3
+
+def answer3(bot, update):
+    if answer == "007668":
+        update.message.reply_text("Du bist ein Held, bald bin ich durch dich frei!")
+    else:
+        update.message.reply_text("Versuchs doch nochmal.")
+
+
 def quest4(bot, update):
     
     bot.send_audio(chat_id=update.message.chat_id, audio=open('water_sound.mp3', 'rb'))
-    #update.message.reply_text("Du musst diesen Ort für mich finden und die Frage beantworten.")
     update.message.reply_text("Was bewacht diesen Ort?")
     return QUEST4
 
 def answer4(bot, update):
-    answer = update.message.text
-    if answer == "lautsprecher" or answer == "Lautsprecher" or answer :
+    answer = lower(update.message.text)
+    if answer == "figur" or answer == "statue" or answer == "person" or answer == "mann" or answer == "mr. net":
         update.message.reply_text("Uh nice, das bringt uns fast ans Ziel! Nur noch eine weitere Quest.")
         return quest5(bot, update)
     else:
         update.message.reply_text("Oh nein, du hast mich getötet!")
-        update.message.reply_text("versuchs doch nochmal")
+        update.message.reply_text("versuchs doch nochmal.")
 
 def quest5(bot, update):
     chat_id = update.message.chat_id
@@ -150,9 +174,11 @@ conv_handler = ConversationHandler(
     entry_points = [CommandHandler('start', intro)],
     states = {
         GETNAME: [MessageHandler(Filters.text, set_name)],
-        START: [MessageHandler(Filters.text, quest1)],
+        START:  [MessageHandler(Filters.text, quest1)],
         QUEST1: [MessageHandler(Filters.location, answer1)],
-        QUEST4: [MessageHandler(Filters.text, answer4)]
+        QUEST2: [MessageHandler(Filters.text, answer2)],
+        QUEST3: [MessageHandler(Filters.text, answer3)],
+        QUEST4: [MessageHandler(Filters.text, answer4)],
         QUEST5: [MessageHandler(Filters.text, whichquest)],
         QUEST6: [MessageHandler(Filters.text, answer6)],
         QUEST7: [MessageHandler(Filters.text, answer7)],
