@@ -1,5 +1,6 @@
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Filters
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+from threading import Timer
 import users
 
 GETNAME, START, QUEST1, QUEST1, QUEST2, QUEST3, QUEST4, UNFINISHED = range(8)
@@ -59,16 +60,36 @@ def answer2(bot, update):
 def quest3(bot, update):
     update.message.reply_text("Jo, ich hab noch eins!")
     update.message.reply_text("Dort hängt es an der Wand, das gibt mir jeden morgen die Hand.")
-    '''sleep(10000)
-    update.message.text("Brauchst du einen Tipp?")
-    answer = update.message.text
-    if answer == "ja":
-        update.message.text("Der Gegenstand befindet sich im Badezimmer.")'''
+    t = Timer(10, tipp3, args=[bot, update])
+    u = users.all[update.message.chat_id]
+    print("registering timer")
+    u['tippTimer'] = t
+    print("starting timer")
+    t.start()
+    print("next state")
     return QUEST3
+
+def tipp3(bot, update):
+    print("tipp geben")
+    users.all[update.message.chat_id]['tippAngeboten'] = True
+    reply_markup = ReplyKeyboardMarkup([['Tipp'],['Noch nicht.']], one_time_keyboard=True)
+    bot.send_message(chat_id=update.message.chat_id, 
+        text="Brauchst du einen Tipp?",
+        reply_markup=reply_markup)
 
 def answer3(bot, update):
     answer = update.message.text
-    if answer == "Handtuch" or answer == "handtuch":
+    user = users.all[update.message.chat_id]
+    print(answer)
+    if user['tippAngeboten'] and answer == "Tipp":
+        user['tippAngeboten'] = False
+        reply_markup = ReplyKeyboardRemove()
+        bot.send_message(chat_id=update.message.chat_id, text="Der Gegenstand befindet sich im Badezimmer.", reply_markup=reply_markup)
+    elif user['tippAngeboten'] and answer == "Noch nicht.":
+        update.message.reply_text('OK, du kannst ihn mit "Tipp" später noch bekommen.')
+    elif answer == "Handtuch" or answer == "handtuch":
+        user['tippAngeboten'] = False
+        user['tippTimer'].cancel()
         update.message.reply_text("Sehr gut, du bist ein schlaues Ding.")
         return quest4(bot, update)
     else:
@@ -111,5 +132,4 @@ conv_handler = ConversationHandler(
         UNFINISHED: [MessageHandler(Filters.text, echo)]
     },
     fallbacks = [CommandHandler('reset', intro)]
-
 )
