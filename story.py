@@ -3,28 +3,46 @@ from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from threading import Timer
 import users, hints
 
-GETNAME, START, QUEST5, QUEST6, QUEST7, QUEST8, UNFINISHED = range(7)
+GETNAME, START, QUEST4, QUEST5, QUEST6, QUEST7, QUEST8, UNFINISHED = range(7)
 
 def intro(bot, update):
-    update.message.reply_text("Hallo, ich brauche deine Hilfe! Ich wurde gefangen genommen und muss entkommen!") 
+    update.message.reply_text("Hallo, ich brauche deine Hilfe! Ich wurde gefangen genommen und du must mich befreien!") 
     update.message.reply_text("Ich bin Calliope.")
     update.message.reply_text("Wie lautet dein Name?")
     return GETNAME
-
+    
 def set_name(bot, update):
     name = update.message.text
     chatId = update.message.chat_id
     users.create(chatId, name)
     reply_markup = ReplyKeyboardMarkup([['los gehts']], one_time_keyboard=True)
-    bot.send_message(chat_id=chatId, text="Freut mich " + name, 
-                  reply_markup=reply_markup)
+    bot.send_message(chat_id=chatId, text="Freut mich " + name, reply_markup=reply_markup)
     return START
+
+
+
+def quest4(bot, update):
+    
+    bot.send_audio(chat_id=update.message.chat_id, audio=open('water_sound.mp3', 'rb'))
+    #update.message.reply_text("Du musst diesen Ort für mich finden und die Frage beantworten.")
+    update.message.reply_text("Was bewacht diesen Ort?")
+    return QUEST4
+
+def answer4(bot, update):
+    answer = update.message.text
+    if answer == "lautsprecher" or answer == "Lautsprecher" or answer :
+        update.message.reply_text("Uh nice, das bringt uns fast ans Ziel! Nur noch eine weitere Quest.")
+        return quest5(bot, update)
+    else:
+        update.message.reply_text("Oh nein, du hast mich getötet!")
+        update.message.reply_text("versuchs doch nochmal")
+
 
 def quest5(bot, update):
     chat_id = update.message.chat_id
     bot.send_photo(chat_id=chat_id, photo=open('drei_tueren.jpg', 'rb'))
     reply_markup = ReplyKeyboardMarkup([['1'],['2'],['3']], one_time_keyboard=True)
-    bot.send_message(chat_id=chat_id, text="Welche Tür soll ich nehmen?", reply_markup=reply_markup)
+    bot.send_message(chat_id=chat_id, text="Triff nun eine Kluge entscheidung. Welche Tür wählst du?", reply_markup=reply_markup)
     return QUEST5
 
 def whichquest(bot, update):
@@ -62,21 +80,21 @@ def answer1(bot, update):
         return START
 '''
 def quest6(bot, update):
-    update.message.reply_text("Nun musst du mir noch bei diesem Rätsel helfen! Ich kann ihn sonst nicht befreien.")
+    update.message.reply_text("Nun musst du noch dieses Rätsel für mich lösen! Dann bin ich frei!")
     update.message.reply_text("Es lautet: Was kannst du sehen, aber nicht nehmen?\nEin Tipp wurde beigelegt: Du bist der Grund!")
     return QUEST6
 
 def answer6(bot, update):
     answer = update.message.text
     if answer == "schatten" or answer == "Schatten":
-        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien! \nDanke für deine hilfe!")
+        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Endlich bin ich dank dir frei!")
         return quest3(bot, update)
     else:
         update.message.reply_text("Oh nein, du hast mich getötet!")
         update.message.reply_text("versuchs doch nochmal")
     
 def quest7(bot, update):
-    update.message.reply_text("Nun musst du mir noch bei diesem Rätsel helfen! Ich kann ihn sonst nicht befreien.")
+    update.message.reply_text("Nun musst du noch dieses Rätsel für mich lösen! Dann bin ich frei!")
     update.message.reply_text("Dort hängt es an der Wand, das gibt mir jeden morgen die Hand.")
     print("run hint timer")
     hints.run_timer(bot, update.message.chat_id, 10, "Brauchst du einen Tipp?")
@@ -89,7 +107,7 @@ def answer7(bot, update):
         return
     elif answer == "Handtuch" or answer == "handtuch":
         hints.cancel(update.message.chat_id)
-        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien! \nDanke für deine hilfe!")
+        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Endlich bin ich dank dir frei!")
         return quest4(bot, update)
     else:
         update.message.reply_text("Oh nein, du hast mich getötet!")
@@ -97,7 +115,7 @@ def answer7(bot, update):
     
 
 def quest8(bot,update):
-    update.message.reply_text("Nun musst du mir noch bei diesem Rätsel helfen! Ich kann ihn sonst nicht befreien.")
+    update.message.reply_text("Nun musst du noch dieses Rätsel für mich lösen! Dann bin ich frei!")
     update.message.reply_text("wer es macht, der sagt es nicht,\nwer es nimmt, der kennt es nicht,\nwer es kennt, der nimmt es nicht.")
     '''sleep(10000)
     update.message.text("Brauchst du einen Tipp?")
@@ -109,7 +127,7 @@ def quest8(bot,update):
 def answer8(bot, update):
     answer = update.message.text
     if answer == "Falschgeld" or answer == "falschgeld" or answer == "Blüten" or answer == "blüten" or answer == "Blüte" or answer == "blüte" or answer == "Gift" or answer == "gift":
-        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien! \nDanke für deine hilfe!")
+        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Endlich bin ich dank dir frei!")
         return UNFINISHED
     else:
         update.message.reply_text("Oh nein, " + users.all[update.message.chat_id]['name'] + " du hast mich getötet!")
@@ -123,7 +141,8 @@ conv_handler = ConversationHandler(
     entry_points = [CommandHandler('start', intro)],
     states = {
         GETNAME: [MessageHandler(Filters.text, set_name)],
-        START: [MessageHandler(Filters.text, quest5)],
+        START: [MessageHandler(Filters.text, quest4)],
+        QUEST4: [MessageHandler(Filters.text, answer4)]
         QUEST5: [MessageHandler(Filters.text, whichquest)],
         QUEST6: [MessageHandler(Filters.text, answer6)],
         QUEST7: [MessageHandler(Filters.text, answer7)],
