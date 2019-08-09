@@ -1,6 +1,5 @@
 from telegram.ext import Updater,CommandHandler
-import story, errors
-import os
+import story, errors, os, logging
 #import sys
 from threading import Thread
 
@@ -14,13 +13,14 @@ def main():
     def stop_and_restart():
         """Gracefully stop the Updater and replace the current process with a new one"""
         updater.stop()
-        print("stopped updater")
+        logging.debug("stopped updater")
         #py_exec = '"' + sys.executable + '"'
         #os.execl(py_exec, py_exec, *sys.argv)
         os.system("python main.py")
 
     def restart(bot, update):
         update.message.reply_text('Bot is restarting...')
+        print(update.message.from_user.name + " requested a restart")
         Thread(target=stop_and_restart).start()
 
     # FIXME add filters=Filters.user(username='@jh0ker')

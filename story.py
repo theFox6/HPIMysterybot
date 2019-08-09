@@ -1,9 +1,9 @@
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Filters
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, KeyboardButton, Location
 from threading import Timer
-import users, hints
+import users, hints, math
 
-GETNAME, START, QUEST5, QUEST6, QUEST7, QUEST8, UNFINISHED = range(7)
+GETNAME, START, QUEST1, QUEST5, QUEST6, QUEST7, QUEST8, UNFINISHED = range(8)
 
 def intro(bot, update):
     update.message.reply_text("Hallo, ich brauche deine Hilfe! Ich wurde gefangen genommen und muss entkommen!") 
@@ -19,6 +19,33 @@ def set_name(bot, update):
     bot.send_message(chat_id=chatId, text="Freut mich " + name, 
                   reply_markup=reply_markup)
     return START
+
+def quest1(bot, update):
+    location_keyboard = KeyboardButton(text="Ich bin angekommen.", request_location=True)
+    reply_markup = ReplyKeyboardMarkup([[location_keyboard]])
+    bot.send_message(chat_id=update.message.chat_id, 
+                 text="Baum", 
+                  reply_markup=reply_markup)
+    return QUEST1
+
+def measure(lat1, lon1, lat2, lon2):
+    R = 6378.137 # Radius of earth in KM
+    dLat = lat2 * math.pi / 180 - lat1 * math.pi / 180
+    dLon = lon2 * math.pi / 180 - lon1 * math.pi / 180
+    a = math.sin(dLat/2) * math.sin(dLat/2) + math.cos(lat1 * math.pi / 180) * math.cos(lat2 * math.pi / 180) * math.sin(dLon/2) * math.sin(dLon/2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    d = R * c
+    return d * 1000; # meters
+
+def answer1(bot, update):
+    location = update.message.location
+    diff = measure(location.latitude, location.longitude, 52.394, 13.133)
+    if diff<20:
+        reply_markup = ReplyKeyboardRemove()
+        bot.send_message(chat_id=update.message.chat_id, text='Du bist da.', reply_markup=reply_markup)
+        return quest5(bot, update)
+    else:
+        update.message.reply_text("Du musst noch "+ str(round(diff)) + " Meter gehen.")
 
 def quest5(bot, update):
     chat_id = update.message.chat_id
@@ -46,21 +73,6 @@ def whichquest(bot, update):
     elif answer == 3:
         return quest8(bot, update)
 
-'''
-def answer1(bot, update):
-    answer = update.message.text
-    if answer == '1':
-        reply_markup = ReplyKeyboardRemove()
-        bot.send_message(chat_id=update.message.chat_id, text="Das war die richtige Tür.", reply_markup=reply_markup)
-        update.message.reply_text("Danke. Ich weiß nicht, ob ich ohne dich noch leben würde.")
-        return quest2(bot, update)
-    else:
-        reply_markup = ReplyKeyboardMarkup([['neu anfangen']], one_time_keyboard=True)
-        bot.send_message(chat_id=update.message.chat_id, 
-                  text="Du hast mich getötet, ich verbrenne!!!",
-                  reply_markup=reply_markup)
-        return START
-'''
 def quest6(bot, update):
     update.message.reply_text("Nun musst du mir noch bei diesem Rätsel helfen! Ich kann ihn sonst nicht befreien.")
     update.message.reply_text("Es lautet: Was kannst du sehen, aber nicht nehmen?\nEin Tipp wurde beigelegt: Du bist der Grund!")
@@ -69,7 +81,7 @@ def quest6(bot, update):
 def answer6(bot, update):
     answer = update.message.text
     if answer == "schatten" or answer == "Schatten":
-        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien! \nDanke für deine hilfe!")
+        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien!")
         return quest3(bot, update)
     else:
         update.message.reply_text("Oh nein, du hast mich getötet!")
@@ -89,7 +101,7 @@ def answer7(bot, update):
         return
     elif answer == "Handtuch" or answer == "handtuch":
         hints.cancel(update.message.chat_id)
-        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien! \nDanke für deine hilfe!")
+        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien!")
         return quest4(bot, update)
     else:
         update.message.reply_text("Oh nein, du hast mich getötet!")
@@ -109,7 +121,7 @@ def quest8(bot,update):
 def answer8(bot, update):
     answer = update.message.text
     if answer == "Falschgeld" or answer == "falschgeld" or answer == "Blüten" or answer == "blüten" or answer == "Blüte" or answer == "blüte" or answer == "Gift" or answer == "gift":
-        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien! \nDanke für deine hilfe!")
+        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien!")
         return UNFINISHED
     else:
         update.message.reply_text("Oh nein, " + users.all[update.message.chat_id]['name'] + " du hast mich getötet!")
@@ -123,7 +135,8 @@ conv_handler = ConversationHandler(
     entry_points = [CommandHandler('start', intro)],
     states = {
         GETNAME: [MessageHandler(Filters.text, set_name)],
-        START: [MessageHandler(Filters.text, quest5)],
+        START: [MessageHandler(Filters.text, quest1)],
+        QUEST1: [MessageHandler(Filters.location, answer1)],
         QUEST5: [MessageHandler(Filters.text, whichquest)],
         QUEST6: [MessageHandler(Filters.text, answer6)],
         QUEST7: [MessageHandler(Filters.text, answer7)],
