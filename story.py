@@ -2,7 +2,7 @@ from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Fi
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 import users
 
-GETNAME, START, QUEST1, QUEST1, QUEST2, QUEST3, QUEST4, UNFINISHED = range(8)
+GETNAME, START, QUEST5, QUEST1, QUEST2, QUEST3, QUEST4, UNFINISHED = range(8)
 
 def intro(bot, update):
     update.message.reply_text("Hallo, ich brauche deine Hilfe! Ich wurde gefangen genommen und muss entkommen!") 
@@ -19,15 +19,13 @@ def set_name(bot, update):
                   reply_markup=reply_markup)
     return START
 
-def quest1(bot, update):
+def quest5(bot, update):
     chat_id = update.message.chat_id
-    bot.send_photo(chat_id=chat_id, photo=open('3_tueren_quest.jpg', 'rb'))
+    bot.send_photo(chat_id=chat_id, photo=open('drei_türen.jpg', 'rb'))
     reply_markup = ReplyKeyboardMarkup([['1'],['2'],['3']], one_time_keyboard=True)
-    bot.send_message(chat_id=chat_id, 
-                  text="Welche Tür soll ich nehmen?",
-                  reply_markup=reply_markup)
-    return QUEST1
-
+    bot.send_message(chat_id=chat_id, text="Welche Tür soll ich nehmen?", reply_markup=reply_markup)
+    return QUEST5
+'''
 def answer1(bot, update):
     answer = update.message.text
     if answer == '1':
@@ -41,23 +39,23 @@ def answer1(bot, update):
                   text="Du hast mich getötet, ich verbrenne!!!",
                   reply_markup=reply_markup)
         return START
+'''
+def quest6(bot, update):
+    update.message.reply_text("Nun musst du mir noch bei diesem Rätsel helfen! Ich kann ihn sonst nicht befreien.")
+    update.message.reply_text("Es lautet: Was kannst du sehen, aber nicht nehmen?\nEin Tipp wurde beigelegt: Du bist der Grund!")
+    return QUEST6
 
-def quest2(bot, update):
-    update.message.reply_text("Ich muss ein weiteres Rätsel beantworten. Bitte hilf mir, ich weiß es nicht.")
-    update.message.reply_text("Was kannst du sehen, aber nicht nehmen?\nEin Tipp wurde beigelegt: Du bist der Grund!")
-    return QUEST2
-
-def answer2(bot, update):
+def answer6(bot, update):
     answer = update.message.text
     if answer == "schatten" or answer == "Schatten":
-        update.message.reply_text("Richtig, danke für die Hilfe ma boy!")
+        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien! \nDanke für deine hilfe!")
         return quest3(bot, update)
     else:
         update.message.reply_text("Oh nein, du hast mich getötet!")
         update.message.reply_text("versuchs doch nochmal")
     
-def quest3(bot, update):
-    update.message.reply_text("Jo, ich hab noch eins!")
+def quest7(bot, update):
+    update.message.reply_text("Nun musst du mir noch bei diesem Rätsel helfen! Ich kann ihn sonst nicht befreien.")
     update.message.reply_text("Dort hängt es an der Wand, das gibt mir jeden morgen die Hand.")
     '''sleep(10000)
     update.message.text("Brauchst du einen Tipp?")
@@ -104,8 +102,8 @@ conv_handler = ConversationHandler(
     states = {
         GETNAME: [MessageHandler(Filters.text, set_name)],
         START: [MessageHandler(Filters.text, quest1)],
-        QUEST1: [MessageHandler(Filters.text, answer1)],
-        QUEST2: [MessageHandler(Filters.text, answer2)],
+        QUEST5: [MessageHandler(Filters.text, quest6, quest7, quest8)],
+        QUEST6: [MessageHandler(Filters.text, answer6)],
         QUEST3: [MessageHandler(Filters.text, answer3)],
         QUEST4: [MessageHandler(Filters.text, answer4)],
         UNFINISHED: [MessageHandler(Filters.text, echo)]
