@@ -58,33 +58,14 @@ def answer6(bot, update):
 def quest7(bot, update):
     update.message.reply_text("Nun musst du mir noch bei diesem Rätsel helfen! Ich kann ihn sonst nicht befreien.")
     update.message.reply_text("Dort hängt es an der Wand, das gibt mir jeden morgen die Hand.")
-    t = Timer(10, tipp3, args=[bot, update])
-    u = users.all[update.message.chat_id]
-    print("registering timer")
-    u['tippTimer'] = t
-    print("starting timer")
-    t.start()
+    run_timer(bot, update.message.chat_id, 10, "Brauchst du einen Tipp?")
     print("next state")
     return QUEST3
 
-def tipp3(bot, update):
-    print("tipp geben")
-    users.all[update.message.chat_id]['tippAngeboten'] = True
-    reply_markup = ReplyKeyboardMarkup([['Tipp'],['Noch nicht.']], one_time_keyboard=True)
-    bot.send_message(chat_id=update.message.chat_id, 
-        text="Brauchst du einen Tipp?",
-        reply_markup=reply_markup)
-
 def answer3(bot, update):
     answer = update.message.text
-    user = users.all[update.message.chat_id]
-    print(answer)
-    if user['tippAngeboten'] and answer == "Tipp":
-        user['tippAngeboten'] = False
-        reply_markup = ReplyKeyboardRemove()
-        bot.send_message(chat_id=update.message.chat_id, text="Der Gegenstand befindet sich im Badezimmer.", reply_markup=reply_markup)
-    elif user['tippAngeboten'] and answer == "Noch nicht.":
-        update.message.reply_text('OK, du kannst ihn mit "Tipp" später noch bekommen.')
+    if handle_hint(bot, update.message.chat_id, "Der Gegenstand befindet sich im Badezimmer."):
+        return
     elif answer == "Handtuch" or answer == "handtuch":
         user['tippAngeboten'] = False
         user['tippTimer'].cancel()
