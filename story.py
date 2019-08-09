@@ -22,9 +22,7 @@ def set_name(bot, update):
 
 def quest5(bot, update):
     chat_id = update.message.chat_id
-    print("sending photo")
     bot.send_photo(chat_id=chat_id, photo=open('drei_tueren.jpg', 'rb'))
-    print("creating keyboard")
     reply_markup = ReplyKeyboardMarkup([['1'],['2'],['3']], one_time_keyboard=True)
     bot.send_message(chat_id=chat_id, text="Welche Tür soll ich nehmen?", reply_markup=reply_markup)
     return QUEST5
@@ -80,17 +78,17 @@ def answer6(bot, update):
 def quest7(bot, update):
     update.message.reply_text("Nun musst du mir noch bei diesem Rätsel helfen! Ich kann ihn sonst nicht befreien.")
     update.message.reply_text("Dort hängt es an der Wand, das gibt mir jeden morgen die Hand.")
+    print("run hint timer")
     hints.run_timer(bot, update.message.chat_id, 10, "Brauchst du einen Tipp?")
-    print("next state")
+    print("switch state")
     return QUEST7
 
 def answer7(bot, update):
     answer = update.message.text
-    if hints.handle_hint(bot, update.message.chat_id, "Der Gegenstand befindet sich im Badezimmer."):
+    if hints.handle_hint(bot, update.message.chat_id, answer, "Der Gegenstand befindet sich im Badezimmer."):
         return
     elif answer == "Handtuch" or answer == "handtuch":
-        user['tippAngeboten'] = False
-        user['tippTimer'].cancel()
+        hints.cancel(update.message.chat_id)
         update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien! \nDanke für deine hilfe!")
         return quest4(bot, update)
     else:
@@ -110,11 +108,11 @@ def quest8(bot,update):
     
 def answer8(bot, update):
     answer = update.message.text
-    if answer == "Falschgeld" or answer == "falschgeld" or answer == "Blüten" or answer == "blüten" or answer == "Blüte" or answer == "blüte" or answer == "Spielgeld" or answer == "spielgeld":
+    if answer == "Falschgeld" or answer == "falschgeld" or answer == "Blüten" or answer == "blüten" or answer == "Blüte" or answer == "blüte" or answer == "Gift" or answer == "gift":
         update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien! \nDanke für deine hilfe!")
         return UNFINISHED
     else:
-        update.message.reply_text("Oh nein, " + users.all[update.message.chat_id].name + " du hast mich getötet!")
+        update.message.reply_text("Oh nein, " + users.all[update.message.chat_id]['name'] + " du hast mich getötet!")
         update.message.reply_text("versuchs doch nochmal")
     
 

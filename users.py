@@ -2,7 +2,8 @@ all = {}
 
 def create(id, name):
     all[id] = {
-        'name': name
+        'name': name,
+        'offeredHint' : False
     }
 
 def migrateUser(oldID, newID):
