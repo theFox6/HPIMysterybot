@@ -1,7 +1,7 @@
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Filters
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from threading import Timer
-import users
+import users, hints
 
 GETNAME, START, QUEST5, QUEST6, QUEST7, QUEST8, UNFINISHED = range(7)
 
@@ -22,18 +22,31 @@ def set_name(bot, update):
 
 def quest5(bot, update):
     chat_id = update.message.chat_id
-    bot.send_photo(chat_id=chat_id, photo=open('drei_türen.jpg', 'rb'))
+    print("sending photo")
+    bot.send_photo(chat_id=chat_id, photo=open('drei_tueren.jpg', 'rb'))
+    print("creating keyboard")
     reply_markup = ReplyKeyboardMarkup([['1'],['2'],['3']], one_time_keyboard=True)
     bot.send_message(chat_id=chat_id, text="Welche Tür soll ich nehmen?", reply_markup=reply_markup)
     return QUEST5
 
 def whichquest(bot, update):
+    answer = update.message.text
+    try:
+        answer = int(answer)
+    except ValueError:
+        update.message.reply_text("Das ist keine Zahl!")
+        return
+    if answer<1 or answer>3:
+        update.message.reply_text("Das steht auf keiner Tür!")
+        return
+    reply_markup = ReplyKeyboardRemove()
+    bot.send_message(chat_id=update.message.chat_id, text='OK, ich nehme tür ' + str(answer), reply_markup=reply_markup)
     if answer == 1:
-        quest6
+        return quest6(bot,update)
     elif answer == 2:
-        quest7
-    else:
-        quest8
+        return quest7(bot, update)
+    elif answer == 3:
+        return quest8(bot, update)
 
 '''
 def answer1(bot, update):
@@ -67,13 +80,13 @@ def answer6(bot, update):
 def quest7(bot, update):
     update.message.reply_text("Nun musst du mir noch bei diesem Rätsel helfen! Ich kann ihn sonst nicht befreien.")
     update.message.reply_text("Dort hängt es an der Wand, das gibt mir jeden morgen die Hand.")
-    run_timer(bot, update.message.chat_id, 10, "Brauchst du einen Tipp?")
+    hints.run_timer(bot, update.message.chat_id, 10, "Brauchst du einen Tipp?")
     print("next state")
     return QUEST7
 
 def answer7(bot, update):
     answer = update.message.text
-    if handle_hint(bot, update.message.chat_id, "Der Gegenstand befindet sich im Badezimmer."):
+    if hints.handle_hint(bot, update.message.chat_id, "Der Gegenstand befindet sich im Badezimmer."):
         return
     elif answer == "Handtuch" or answer == "handtuch":
         user['tippAngeboten'] = False
@@ -112,7 +125,7 @@ conv_handler = ConversationHandler(
     entry_points = [CommandHandler('start', intro)],
     states = {
         GETNAME: [MessageHandler(Filters.text, set_name)],
-        START: [MessageHandler(Filters.text, quest1)],
+        START: [MessageHandler(Filters.text, quest5)],
         QUEST5: [MessageHandler(Filters.text, whichquest)],
         QUEST6: [MessageHandler(Filters.text, answer6)],
         QUEST7: [MessageHandler(Filters.text, answer7)],

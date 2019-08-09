@@ -22,5 +22,5 @@ def handle_hint(bot, chat_id, hint_text):
     elif user['tippAngeboten'] and answer == "Noch nicht.":
         bot.send_message(chat_id = chat_id, text = 'OK, du kannst ihn mit "Tipp" später noch bekommen.')
         return True
-    else
+    else:
         return False
