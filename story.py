@@ -3,7 +3,7 @@ from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from threading import Timer
 import users
 
-GETNAME, START, QUEST5, QUEST1, QUEST2, QUEST3, QUEST4, UNFINISHED = range(8)
+GETNAME, START, QUEST5, QUEST6, QUEST7, QUEST8, UNFINISHED = range(7)
 
 def intro(bot, update):
     update.message.reply_text("Hallo, ich brauche deine Hilfe! Ich wurde gefangen genommen und muss entkommen!") 
@@ -26,6 +26,15 @@ def quest5(bot, update):
     reply_markup = ReplyKeyboardMarkup([['1'],['2'],['3']], one_time_keyboard=True)
     bot.send_message(chat_id=chat_id, text="Welche Tür soll ich nehmen?", reply_markup=reply_markup)
     return QUEST5
+
+def whichquest(bot, update):
+    if answer == 1:
+        quest6
+    elif answer == 2:
+        quest7
+    else:
+        quest8
+
 '''
 def answer1(bot, update):
     answer = update.message.text
@@ -58,16 +67,16 @@ def answer6(bot, update):
 def quest7(bot, update):
     update.message.reply_text("Nun musst du mir noch bei diesem Rätsel helfen! Ich kann ihn sonst nicht befreien.")
     update.message.reply_text("Dort hängt es an der Wand, das gibt mir jeden morgen die Hand.")
-    t = Timer(10, tipp3, args=[bot, update])
+    t = Timer(10, tipp7, args=[bot, update])
     u = users.all[update.message.chat_id]
     print("registering timer")
     u['tippTimer'] = t
     print("starting timer")
     t.start()
     print("next state")
-    return QUEST3
+    return QUEST7
 
-def tipp3(bot, update):
+def tipp7(bot, update):
     print("tipp geben")
     users.all[update.message.chat_id]['tippAngeboten'] = True
     reply_markup = ReplyKeyboardMarkup([['Tipp'],['Noch nicht.']], one_time_keyboard=True)
@@ -75,7 +84,7 @@ def tipp3(bot, update):
         text="Brauchst du einen Tipp?",
         reply_markup=reply_markup)
 
-def answer3(bot, update):
+def answer7(bot, update):
     answer = update.message.text
     user = users.all[update.message.chat_id]
     print(answer)
@@ -88,27 +97,27 @@ def answer3(bot, update):
     elif answer == "Handtuch" or answer == "handtuch":
         user['tippAngeboten'] = False
         user['tippTimer'].cancel()
-        update.message.reply_text("Sehr gut, du bist ein schlaues Ding.")
+        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien! \nDanke für deine hilfe!")
         return quest4(bot, update)
     else:
         update.message.reply_text("Oh nein, du hast mich getötet!")
         update.message.reply_text("versuchs doch nochmal")
     
 
-def quest4(bot,update):
-    update.message.reply_text("Ich bin immernoch gefangen und ich stehe vor einem weiteren Rätsel wofür ich deine Hilfe benötige. Es ist echt schwer.")
+def quest8(bot,update):
+    update.message.reply_text("Nun musst du mir noch bei diesem Rätsel helfen! Ich kann ihn sonst nicht befreien.")
     update.message.reply_text("wer es macht, der sagt es nicht,\nwer es nimmt, der kennt es nicht,\nwer es kennt, der nimmt es nicht.")
     '''sleep(10000)
     update.message.text("Brauchst du einen Tipp?")
     answer = update.message.text
     if answer == "ja":
         update.message.text("Es hat etwas mit geld zu tun")'''
-    return QUEST4
+    return QUEST8
     
-def answer4(bot, update):
+def answer8(bot, update):
     answer = update.message.text
     if answer == "Falschgeld" or answer == "falschgeld" or answer == "Blüten" or answer == "blüten" or answer == "Blüte" or answer == "blüte" or answer == "Spielgeld" or answer == "spielgeld":
-        update.message.reply_text("Bravo, das rätsel war etwas knifflig")
+        update.message.reply_text("Richtig, danke für die Hilfe ma boy! Ich konnte ihn befreien! \nDanke für deine hilfe!")
         return UNFINISHED
     else:
         update.message.reply_text("Oh nein, " + users.all[update.message.chat_id].name + " du hast mich getötet!")
@@ -123,10 +132,10 @@ conv_handler = ConversationHandler(
     states = {
         GETNAME: [MessageHandler(Filters.text, set_name)],
         START: [MessageHandler(Filters.text, quest1)],
-        QUEST5: [MessageHandler(Filters.text, quest6, quest7, quest8)],
+        QUEST5: [MessageHandler(Filters.text, whichquest)],
         QUEST6: [MessageHandler(Filters.text, answer6)],
-        QUEST3: [MessageHandler(Filters.text, answer3)],
-        QUEST4: [MessageHandler(Filters.text, answer4)],
+        QUEST7: [MessageHandler(Filters.text, answer7)],
+        QUEST8: [MessageHandler(Filters.text, answer8)],
         UNFINISHED: [MessageHandler(Filters.text, echo)]
     },
     fallbacks = [CommandHandler('reset', intro)]
