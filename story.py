@@ -1,7 +1,7 @@
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Filters
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, KeyboardButton, Location
 from threading import Timer
-import users, hints, math
+import users, hints, math, logging
 
 GETNAME, START, QUEST1, QUEST4, QUEST5, QUEST6, QUEST7, QUEST8, UNFINISHED = range(9)
 
@@ -20,11 +20,15 @@ def set_name(bot, update):
     return START
 
 def quest1(bot, update):
+    logging.info("building location keyboard")
     location_keyboard = KeyboardButton(text="Ich bin angekommen.", request_location=True)
+    logging.info("building reply keyboard markup")
     reply_markup = ReplyKeyboardMarkup([[location_keyboard]])
+    logging.info("sending message")
     bot.send_message(chat_id=update.message.chat_id, 
                  text="Baum", 
                   reply_markup=reply_markup)
+    logging.info("changing state")
     return QUEST1
 
 def measure(lat1, lon1, lat2, lon2):
@@ -105,9 +109,9 @@ def answer6(bot, update):
 def quest7(bot, update):
     update.message.reply_text("Nun musst du noch dieses Rätsel für mich lösen! Dann bin ich frei!")
     update.message.reply_text("Dort hängt es an der Wand, das gibt mir jeden morgen die Hand.")
-    print("run hint timer")
+    logging.info("run hint timer")
     hints.run_timer(bot, update.message.chat_id, 10, "Brauchst du einen Tipp?")
-    print("switch state")
+    logging.info("switch state")
     return QUEST7
 
 def answer7(bot, update):
@@ -126,16 +130,14 @@ def answer7(bot, update):
 def quest8(bot,update):
     update.message.reply_text("Nun musst du noch dieses Rätsel für mich lösen! Dann bin ich frei!")
     update.message.reply_text("wer es macht, der sagt es nicht,\nwer es nimmt, der kennt es nicht,\nwer es kennt, der nimmt es nicht.")
-    '''sleep(10000)
-    update.message.text("Brauchst du einen Tipp?")
-    answer = update.message.text
-    if answer == "ja":
-        update.message.text("Es hat etwas mit geld zu tun")'''
+    run_timer(bot, update.message.chat_id, 10, "Brauchst du einen Tipp?")
     return QUEST8
     
 def answer8(bot, update):
     answer = update.message.text
-    if answer == "Falschgeld" or answer == "falschgeld" or answer == "Blüten" or answer == "blüten" or answer == "Blüte" or answer == "blüte" or answer == "Gift" or answer == "gift":
+    if handle_hint(bot, update.message.chat_id, answer, "Es hat etwas mit geld zu tun"):
+        return
+    elif answer == "Falschgeld" or answer == "falschgeld" or answer == "Blüten" or answer == "blüten" or answer == "Blüte" or answer == "blüte" or answer == "Gift" or answer == "gift":
         update.message.reply_text("Richtig, danke für die Hilfe ma boy! Endlich bin ich dank dir frei!")
         return UNFINISHED
     else:
@@ -152,7 +154,7 @@ conv_handler = ConversationHandler(
         GETNAME: [MessageHandler(Filters.text, set_name)],
         START: [MessageHandler(Filters.text, quest1)],
         QUEST1: [MessageHandler(Filters.location, answer1)],
-        QUEST4: [MessageHandler(Filters.text, answer4)]
+        QUEST4: [MessageHandler(Filters.text, answer4)],
         QUEST5: [MessageHandler(Filters.text, whichquest)],
         QUEST6: [MessageHandler(Filters.text, answer6)],
         QUEST7: [MessageHandler(Filters.text, answer7)],

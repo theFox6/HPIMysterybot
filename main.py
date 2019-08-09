@@ -19,6 +19,7 @@ def main():
         os.system("python main.py")
 
     def restart(bot, update):
+        print('Bot is restarting...')
         update.message.reply_text('Bot is restarting...')
         print(update.message.from_user.name + " requested a restart")
         Thread(target=stop_and_restart).start()
