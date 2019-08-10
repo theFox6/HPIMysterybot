@@ -7,6 +7,7 @@ GETNAME, START, QUEST1, QUEST2, QUEST3, QUEST4, QUEST5, QUEST6, QUEST7, QUEST8, 
 
 def intro(bot, update):
     update.message.reply_text("Hallo, ich brauche deine Hilfe! Ich wurde gefangen genommen und du must mich befreien, indem du verschiedene Rätsel löst.") 
+    update.message.reply_text("Beile dich, um einer der besten zu werden!")
     update.message.reply_text("Ich bin Calliope.")
     update.message.reply_text("Wie lautet dein Name?")
     return GETNAME
@@ -98,9 +99,9 @@ def answer4(bot, update):
         update.message.reply_text("Uh nice, das bringt uns fast ans Ziel! Nur noch eine weitere Quest.")
         return quest5(bot, update)
     else:
-        users.add_fail(update.message.chat_id)
-        update.message.reply_text("Oh nein, du hast mich getötet!")
-        update.message.reply_text("versuchs doch nochmal.")
+        update.message.reply_text("Oh nein, das war die falsche Antwort!")
+        update.message.reply_text("Wenn du noch einmal falsch Antwortest tötest du mich!")
+        update.message.reply_text("Denk nochmal genau nach.")
 
 def quest5(bot, update):
     chat_id = update.message.chat_id
@@ -145,9 +146,9 @@ def answer6(bot, update):
         update.message.reply_text("Richtig, danke für die Hilfe ma boy! Endlich bin ich dank dir frei!")
         return theEnd(bot, update)
     else:
-        users.add_fail(update.message.chat_id)
-        update.message.reply_text("Oh nein, du hast mich getötet!")
-        update.message.reply_text("versuchs doch nochmal")
+        update.message.reply_text("Oh nein, das war die falsche Antwort!")
+        update.message.reply_text("Wenn du noch einmal falsch Antwortest tötest du mich!")
+        update.message.reply_text("Denk nochmal genau nach.")
     
 def quest7(bot, update):
     update.message.reply_text("Nun musst du noch dieses Rätsel für mich lösen! Dann bin ich frei!")
@@ -164,9 +165,9 @@ def answer7(bot, update):
         update.message.reply_text("Richtig, danke für die Hilfe ma boy! Endlich bin ich dank dir frei!")
         return theEnd(bot, update)
     else:
-        users.add_fail(update.message.chat_id)
-        update.message.reply_text("Oh nein, du hast mich getötet!")
-        update.message.reply_text("versuchs doch nochmal")
+        update.message.reply_text("Oh nein, das war die falsche Antwort!")
+        update.message.reply_text("Wenn du noch einmal falsch Antwortest tötest du mich!")
+        update.message.reply_text("Denk nochmal genau nach.")
     
 
 def quest8(bot,update):
@@ -182,10 +183,9 @@ def answer8(bot, update):
         update.message.reply_text("Richtig, danke für die Hilfe ma boy! Endlich bin ich dank dir frei!")
         return theEnd(bot, update)
     else:
-        users.add_fail(update.message.chat_id)
-        update.message.reply_text("Oh nein, " + users.all[update.message.chat_id]['name'] + " du hast mich getötet!")
-        update.message.reply_text("versuchs doch nochmal")
-    
+        update.message.reply_text("Oh nein, " + users.all[update.message.chat_id]['name'] + "das war die falsche Antwort!")
+        update.message.reply_text("Wenn du noch einmal falsch Antwortest tötest du mich!")
+        update.message.reply_text("Denk nochmal genau nach.")
 
 def theEnd(bot, update):
     chatId = update.message.chat_id
