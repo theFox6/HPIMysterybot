@@ -2,10 +2,10 @@ from telegram.ext import Updater,CommandHandler, Filters
 import story, errors, os, logging, hints
 from threading import Thread
 
-with open("token.txt") as token_file:
+with open("api/TOKEN") as token_file:
     token = token_file.read().strip()
 
-with open("owners.txt") as owner_file:
+with open("api/OWNERS") as owner_file:
     owners = owner_file.readlines()
 
 def send_source(bot, update):
@@ -29,7 +29,10 @@ def main():
         print(update.message.from_user.name + " requested a restart")
         Thread(target=stop_and_restart).start()
 
-    dispatcher.add_handler(CommandHandler('restart', restart, filters=Filters.user(username=owners)))
+    if len(owners) == 0:
+        print("no owners file: disabling restart command")
+    else:
+        dispatcher.add_handler(CommandHandler('restart', restart, filters=Filters.user(username=owners)))
     dispatcher.add_handler(CommandHandler('source', send_source))
     dispatcher.add_handler(story.conv_handler)
     dispatcher.add_handler(hints.callback_handler)

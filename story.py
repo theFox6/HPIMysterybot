@@ -20,6 +20,7 @@ def set_name(bot, update):
     return START
 
 def quest1(bot, update):
+    users.start_time(update.message.chat_id)
     logging.info("building location keyboard")
     location_keyboard = KeyboardButton(text="Ich bin angekommen.", request_location=True)
     logging.info("building reply keyboard markup")
@@ -184,9 +185,9 @@ def theEnd(bot, update):
     chatId = update.message.chat_id
     name = users.all[chatId]['name']
     reply_markup = ReplyKeyboardMarkup([['noch einmal spielen']], one_time_keyboard=True)
-
     bot.send_message(chat_id=chatId, text="Glückwunsch " + name + " du hast das Spiel geschafft.", reply_markup=reply_markup)
     bot.sendSticker(chatId, bot.get_sticker_set("MabelsStickers").stickers[2])
+    users.end_time(bot,chatId)
     return THEEND
 
 def restart(bot, update):
@@ -194,7 +195,10 @@ def restart(bot, update):
         reply_markup = ReplyKeyboardRemove()
         bot.send_message(chat_id=update.message.chat_id, text="Dann noch einmal.", reply_markup=reply_markup)
         return intro(bot, update)
-    print(update.message.text)
+    if update.message.text == "highscores zeigen":
+        scores = ""
+        for score in users.highscores:
+            scores += score.name + ': ' + str(score.time)
 
 conv_handler = ConversationHandler(
     entry_points = [CommandHandler('start', intro)],
