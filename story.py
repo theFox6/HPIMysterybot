@@ -7,6 +7,7 @@ GETNAME, START, QUEST1, QUEST2, QUEST3, QUEST4, QUEST5, QUEST6, QUEST7, QUEST8, 
 
 def intro(bot, update):
     update.message.reply_text("Hallo, ich brauche deine Hilfe! Ich wurde gefangen genommen und du must mich befreien, indem du verschiedene Rätsel löst.") 
+    update.message.reply_text("Beile dich, um einer der besten zu werden!")
     update.message.reply_text("Ich bin Calliope.")
     update.message.reply_text("Wie lautet dein Name?")
     return GETNAME
