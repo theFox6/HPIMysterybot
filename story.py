@@ -26,7 +26,7 @@ def quest1(bot, update):
     reply_markup = ReplyKeyboardMarkup([[location_keyboard]])
     logging.info("sending message")
     bot.send_message(chat_id=update.message.chat_id, 
-                 text="Finde den ästhetischsten Baum auf dem Gelände", 
+                 text="Finde den bekanntesten Baum auf dem Gelände", 
                   reply_markup=reply_markup)
     logging.info("changing state")
     return QUEST1
@@ -43,7 +43,7 @@ def measure(lat1, lon1, lat2, lon2):
 def answer1(bot, update):
     location = update.message.location
     diff = measure(location.latitude, location.longitude, 52.394, 13.133)
-    if diff<50:
+    if diff<30:
         reply_markup = ReplyKeyboardRemove()
         bot.send_message(chat_id=update.message.chat_id, text='Du bist da.', reply_markup=reply_markup)
         return quest2(bot, update)
@@ -124,9 +124,14 @@ def whichquest(bot, update):
     elif answer == 3:
         return quest8(bot, update)
 
+def hint6(bot, chat_id):
+    hints.run_timer(bot, chat_id, "Es folgt dir auf Schritt und Tritt.",
+        time = 60, offer_text = "Ich habe auch noch einen besseren Tipp.")
+
 def quest6(bot, update):
     update.message.reply_text("Nun musst du noch dieses Rätsel für mich lösen! Dann bin ich frei!")
     update.message.reply_text("Es lautet: Was kannst du sehen, aber nicht nehmen?\nEin Tipp wurde beigelegt: Du bist der Grund!")
+    hints.run_timer(bot, update.message.chat_id, "Ohne Licht existiert es nicht.", func = hint6)
     return QUEST6
 
 def answer6(bot, update):
@@ -142,7 +147,7 @@ def quest7(bot, update):
     update.message.reply_text("Nun musst du noch dieses Rätsel für mich lösen! Dann bin ich frei!")
     update.message.reply_text("Dort hängt es an der Wand, das gibt mir jeden morgen die Hand.")
     logging.info("run hint timer")
-    hints.run_timer(bot, update.message.chat_id, 10, "Der Gegenstand befindet sich im Badezimmer.")
+    hints.run_timer(bot, update.message.chat_id, "Der Gegenstand befindet sich im Badezimmer.")
     logging.info("switch state")
     return QUEST7
 
@@ -160,7 +165,7 @@ def answer7(bot, update):
 def quest8(bot,update):
     update.message.reply_text("Nun musst du noch dieses Rätsel für mich lösen! Dann bin ich frei!")
     update.message.reply_text("wer es macht, der sagt es nicht,\nwer es nimmt, der kennt es nicht,\nwer es kennt, der nimmt es nicht.")
-    hints.run_timer(bot, update.message.chat_id, 10, "Es hat etwas mit geld zu tun")
+    hints.run_timer(bot, update.message.chat_id, "Es hat etwas mit geld zu tun")
     return QUEST8
     
 def answer8(bot, update):
