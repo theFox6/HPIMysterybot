@@ -6,7 +6,7 @@ import users, hints, math, logging
 GETNAME, START, QUEST1, QUEST2, QUEST3, QUEST4, QUEST5, QUEST6, QUEST7, QUEST8, THEEND = range(11)
 
 def intro(bot, update):
-    update.message.reply_text("Hallo, ich brauche deine Hilfe! Ich wurde gefangen genommen und du must mich befreien!") 
+    update.message.reply_text("Hallo, ich brauche deine Hilfe! Ich wurde gefangen genommen und du must mich befreien, indem du verschiedene Rätsel löst.") 
     update.message.reply_text("Ich bin Calliope.")
     update.message.reply_text("Wie lautet dein Name?")
     return GETNAME
@@ -45,7 +45,7 @@ def answer1(bot, update):
     diff = measure(location.latitude, location.longitude, 52.394, 13.133)
     if diff<30:
         reply_markup = ReplyKeyboardRemove()
-        bot.send_message(chat_id=update.message.chat_id, text='Du bist da.', reply_markup=reply_markup)
+        bot.send_message(chat_id=update.message.chat_id, text='Du bist am Startpunkt angekommen.', reply_markup=reply_markup)
         return quest2(bot, update)
     else:
         update.message.reply_text("Du musst noch "+ str(round(diff)) + " Meter gehen.")
