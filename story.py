@@ -127,7 +127,7 @@ def whichquest(bot, update):
 
 def hint6(bot, chat_id):
     hints.run_timer(bot, chat_id, "Es folgt dir auf Schritt und Tritt.",
-        time = 60, offer_text = "Ich habe auch noch einen besseren Tipp.")
+        time = 120, offer_text = "Ich habe auch noch einen besseren Tipp.")
 
 def quest6(bot, update):
     update.message.reply_text("Nun musst du noch dieses Rätsel für mich lösen! Dann bin ich frei!")
