@@ -9,6 +9,9 @@ with open("token.txt") as token_file:
 with open("owners.txt") as owner_file:
     owners = owner_file.readlines()
 
+def send_source(bot, update):
+    update.message.reply_text("https://github.com/theFox6/HPIMysterybot")
+
 def main():
     updater = Updater(token=token)
     dispatcher = updater.dispatcher
@@ -28,6 +31,7 @@ def main():
         Thread(target=stop_and_restart).start()
 
     dispatcher.add_handler(CommandHandler('restart', restart, filters=Filters.user(username=owners)))
+    dispatcher.add_handler(CommandHandler('source', send_source))
     dispatcher.add_handler(story.conv_handler)
     dispatcher.add_handler(hints.callback_handler)
     dispatcher.add_error_handler(errors.error_callback)
