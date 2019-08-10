@@ -7,7 +7,7 @@ def give_hint(bot, chat_id, hint_text, offer_text):
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Tipp",callback_data=hint_text)]])
     bot.send_message(chat_id=chat_id, text=offer_text, reply_markup=reply_markup)
 
-def run_timer(bot, chat_id, hint_text, time = 20, func = False, offer_text = "Brauchst du einen Tipp?"):
+def run_timer(bot, chat_id, hint_text, time = 60, func = False, offer_text = "Brauchst du einen Tipp?"):
     logging.debug("creating hint timer")
     t = Timer(time, give_hint, args=[bot, chat_id, hint_text, offer_text])
     logging.info("registering timer")

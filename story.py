@@ -128,7 +128,7 @@ def whichquest(bot, update):
 
 def hint6(bot, chat_id):
     hints.run_timer(bot, chat_id, "Es folgt dir auf Schritt und Tritt.",
-        time = 60, offer_text = "Ich habe auch noch einen besseren Tipp.")
+        time = 120, offer_text = "Ich habe auch noch einen besseren Tipp.")
 
 def quest6(bot, update):
     update.message.reply_text("Nun musst du noch dieses Rätsel für mich lösen! Dann bin ich frei!")
@@ -187,7 +187,7 @@ def answer8(bot, update):
 def theEnd(bot, update):
     chatId = update.message.chat_id
     name = users.all[chatId]['name']
-    reply_markup = ReplyKeyboardMarkup([['noch einmal spielen']], one_time_keyboard=True)
+    reply_markup = ReplyKeyboardMarkup([['noch einmal spielen'],['highscores zeigen']], one_time_keyboard=True)
     bot.send_message(chat_id=chatId, text="Glückwunsch " + name + " du hast das Spiel geschafft.", reply_markup=reply_markup)
     bot.sendSticker(chatId, bot.get_sticker_set("MabelsStickers").stickers[2])
     users.end_time(bot,chatId)
