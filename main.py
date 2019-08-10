@@ -27,7 +27,7 @@ def main():
             users.users = pickle.load(f)
             f.close()
             f = open('backup/scores', 'rb')
-            users.highscores = pickle.load(f)
+            users.highscores = pickle.load(f)['scores']
             f.close()
         except FileNotFoundError:
             logging.error("Data file not found")         
@@ -54,7 +54,7 @@ def main():
             pickle.dump(users.all, f)
             f.close()
             f = open('backup/scores', 'wb+')
-            pickle.dump(users.highscores, f)
+            pickle.dump({'scores' : users.highscores}, f)
             f.close()
         except:
             logging.error(sys.exc_info()[0])

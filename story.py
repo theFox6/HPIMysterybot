@@ -65,6 +65,7 @@ def answer2(bot, update):
         update.message.reply_text("Perfekt, das hast du gut gemacht!")
         return quest3(bot, update)
     else:
+        users.add_fail(update.message.chat_id)
         update.message.reply_text("Versuchs doch nochmal.")
 
 def quest3(bot, update):
@@ -80,6 +81,7 @@ def answer3(bot, update):
         update.message.reply_text("Du bist ein Held, bald bin ich durch dich frei!")
         return quest4(bot, update)
     else:
+        users.add_fail(update.message.chat_id)
         update.message.reply_text("Versuchs doch nochmal.")
 
 
@@ -96,6 +98,7 @@ def answer4(bot, update):
         update.message.reply_text("Uh nice, das bringt uns fast ans Ziel! Nur noch eine weitere Quest.")
         return quest5(bot, update)
     else:
+        users.add_fail(update.message.chat_id)
         update.message.reply_text("Oh nein, du hast mich getötet!")
         update.message.reply_text("versuchs doch nochmal.")
 
@@ -142,6 +145,7 @@ def answer6(bot, update):
         update.message.reply_text("Richtig, danke für die Hilfe ma boy! Endlich bin ich dank dir frei!")
         return theEnd(bot, update)
     else:
+        users.add_fail(update.message.chat_id)
         update.message.reply_text("Oh nein, du hast mich getötet!")
         update.message.reply_text("versuchs doch nochmal")
     
@@ -160,6 +164,7 @@ def answer7(bot, update):
         update.message.reply_text("Richtig, danke für die Hilfe ma boy! Endlich bin ich dank dir frei!")
         return theEnd(bot, update)
     else:
+        users.add_fail(update.message.chat_id)
         update.message.reply_text("Oh nein, du hast mich getötet!")
         update.message.reply_text("versuchs doch nochmal")
     
@@ -177,6 +182,7 @@ def answer8(bot, update):
         update.message.reply_text("Richtig, danke für die Hilfe ma boy! Endlich bin ich dank dir frei!")
         return theEnd(bot, update)
     else:
+        users.add_fail(update.message.chat_id)
         update.message.reply_text("Oh nein, " + users.all[update.message.chat_id]['name'] + " du hast mich getötet!")
         update.message.reply_text("versuchs doch nochmal")
     
@@ -198,9 +204,14 @@ def restart(bot, update):
         return intro(bot, update)
     if answer == "highscores zeigen":
         scores = ""
+        print(users.highscores)
         for score in users.highscores:
-            scores += score.name + ': ' + str(score.time) + "\n"
-        update.message.reply_text(scores)
+            if score.name:
+                scores += score.name + ': '
+            scores += str(score.time) + "\n"
+        print(scores)
+        if len(scores) > 0:
+            update.message.reply_text(scores)
 
 conv_handler = ConversationHandler(
     entry_points = [CommandHandler('start', intro)],

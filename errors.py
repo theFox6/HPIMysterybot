@@ -1,6 +1,8 @@
 from telegram.error import Unauthorized, TimedOut, ChatMigrated
 import users
+
 timeouts = 0
+
 def error_callback(bot, update, error):
     try:
         raise error

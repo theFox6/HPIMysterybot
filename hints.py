@@ -28,4 +28,11 @@ def cancel(chat_id):
     user['hintFunc'] = False
     user['hintTimer'].cancel()
 
+def kill_timers():
+        for user in users.all:
+                user['hintFunc'] = False
+                user['hintTimer'].cancel() 
+                del user['hintTimer']
+    
+
 callback_handler = CallbackQueryHandler(handle_hint)
