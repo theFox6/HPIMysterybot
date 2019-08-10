@@ -22,7 +22,7 @@ def start_time(chat_id):
 def end_time(bot, chatId):
     user = all[chatId]
     diff_time = time.time() - user['start_time']
-    bot.send_message(chat_id=chatId, text="Du hast " + str(diff_time/60) + " Minuten (+" + str(user['fails']) + " Fehler) gebraucht.")
+    bot.send_message(chat_id=chatId, text="Du hast " + str(diff_time/60) + " Minuten (+" + str(user['fails']) + " Fehler * 2 Minuten) gebraucht.")
     diff_time += user['fails'] * 120
     index = False
     for score in highscores:
