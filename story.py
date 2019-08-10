@@ -137,6 +137,7 @@ def quest6(bot, update):
 def answer6(bot, update):
     answer = update.message.text.lower()
     if answer == "schatten":
+        hints.cancel(update.message.chat_id)
         update.message.reply_text("Richtig, danke für die Hilfe ma boy! Endlich bin ich dank dir frei!")
         return theEnd(bot, update)
     else:

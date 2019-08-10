@@ -1,6 +1,5 @@
 from telegram.ext import Updater,CommandHandler, Filters
 import story, errors, os, logging, hints
-#import sys
 from threading import Thread
 
 with open("token.txt") as token_file:
