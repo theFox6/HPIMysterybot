@@ -1,10 +1,13 @@
-from telegram.ext import Updater,CommandHandler
-import story, errors, os, logging
+from telegram.ext import Updater,CommandHandler, Filters
+import story, errors, os, logging, hints
 #import sys
 from threading import Thread
 
 with open("token.txt") as token_file:
     token = token_file.read().strip()
+
+with open("owners.txt") as owner_file:
+    owners = owner_file.readlines()
 
 def main():
     updater = Updater(token=token)
@@ -24,9 +27,9 @@ def main():
         print(update.message.from_user.name + " requested a restart")
         Thread(target=stop_and_restart).start()
 
-    # FIXME add filters=Filters.user(username='@jh0ker')
-    dispatcher.add_handler(CommandHandler('restart', restart))
+    dispatcher.add_handler(CommandHandler('restart', restart, filters=Filters.user(username=owners)))
     dispatcher.add_handler(story.conv_handler)
+    dispatcher.add_handler(hints.callback_handler)
     dispatcher.add_error_handler(errors.error_callback)
 
     updater.start_polling()
